@@ -222,7 +222,7 @@ main {
     }
 
     #contenedor-conversion .sel-categoria {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
     }
 }
 
@@ -235,6 +235,7 @@ main {
     #contenedor-conversion input, 
     #contenedor-conversion select {
         max-width: none;
+        padding: 14px;
         width: 100%;
     }
 
@@ -247,5 +248,9 @@ main {
     
     .logo-titulo h1 {
         font-size: 1.1rem;
+    }
+
+    #contenedor-conversion .sel-categoria {
+        font-size: 1em;
     }
 }
