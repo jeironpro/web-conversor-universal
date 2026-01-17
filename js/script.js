@@ -189,20 +189,86 @@ const conversiones = {
 }
 
 const contenedorConversiones = document.getElementById("contenedor-conversiones");
-
 const listaConversiones = document.getElementById("lista-conversiones");
+const contenedorConversion = document.getElementById("contenedor-conversion");
 
-const mostraSelectoresCategoria = function(categoria) {
-    /* Implementar logica para mostrar el input de entrada del valor a convertir, seguido de dos select con las misma opciones de la categoria seleccionada y por ultimo el campo que muestra el valor resultante de la conversion */
+const mostraSelectoresCategoria = function (categoria) {
+    contenedorConversion.innerHTML = "";
+
+    const inputObj = document.createElement("input");
+    inputObj.type = "number";
+    inputObj.classList.add("campo-valor-conversion");
+    inputObj.id = "valor-conversion";
+    contenedorConversion.appendChild(inputObj);
+
+    const contenedorSelectsObj = document.createElement("div");
+
+    const tipoConversiones = conversiones[categoria].conversiones;
+    const selectObj = document.createElement("select");
+
+    tipoConversiones.forEach(elemento => {
+        const nombre = Object.keys(elemento)[0];
+
+        const optionObj = document.createElement("option");
+        optionObj.value = nombre;
+        optionObj.textContent = nombre;
+        selectObj.appendChild(optionObj);
+    });
+
+    contenedorSelectsObj.appendChild(selectObj);
+    const cloneSelectObj = selectObj.cloneNode(true);
+    
+    if (cloneSelectObj.options.length > 1) {
+        cloneSelectObj.selectedIndex = 1;
+    }
+    contenedorSelectsObj.appendChild(cloneSelectObj);
+    contenedorConversion.appendChild(contenedorSelectsObj);
+
+    inputObj.addEventListener("input", function () {
+        const desdeValue = selectObj.value;
+        const hastaValue = cloneSelectObj.value;
+        const valor = Number(inputObj.value);
+        calculoConversion(categoria, desdeValue, hastaValue, valor);
+    });
+    const contenedorResultadoObj = document.createElement("span");
+    contenedorResultadoObj.id = "resultado-conversion";
+
+    contenedorConversion.appendChild(contenedorResultadoObj);
 }
 
-const calculoConversion = function(desde, hasta) {
-    /* Implementar la logica para hacer el calcula de la conversion seleccionada */
+const obtenerFuncion = (tipoConversiones, conversion) => {
+    return tipoConversiones.find(conversiones => conversiones[conversion])?.[conversion];
+};
+
+const calculoConversion = function (categoria, desde, hasta, valor) {
+    if (!valor || isNaN(valor)) {
+        contenedorResultadoObj.textContent = "";
+        contenedorResultadoObj.style.display = "none";
+        return;
+    }
+
+    const tipoConversiones = conversiones[categoria].conversiones;
+    const conversionDesde = obtenerFuncion(tipoConversiones, desde);
+    const conversionHasta = obtenerFuncion(tipoConversiones, hasta);
+
+    const valorBase = conversionDesde(valor);
+    const resultado = valorBase / conversionHasta(1);
+    const resultadoFormateado = resultado.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    const contenedorResultadoObj = document.getElementById("resultado-conversion");
+    contenedorResultadoObj.textContent = resultadoFormateado;
+    contenedorResultadoObj.style.display = "flex";
 }
 
 for (const categoria in conversiones) {
     const categoriaObj = document.createElement("li");
     categoriaObj.textContent = categoria;
-    
+    categoriaObj.addEventListener("click", function () {
+        mostraSelectoresCategoria(categoria);
+    });
+
     listaConversiones.appendChild(categoriaObj);
 }
